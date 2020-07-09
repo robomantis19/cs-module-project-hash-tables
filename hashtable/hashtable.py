@@ -12,7 +12,7 @@ class HashTableEntry:
 MIN_CAPACITY = 8
 
 
-class HashTable:
+class HashTable():
     """
     A hash table that with `capacity` buckets
     that accepts string keys
@@ -22,8 +22,9 @@ class HashTable:
 
     def __init__(self, capacity):
         # Your code here
-
-
+        
+        self.capacity = [None] * MIN_CAPACITY
+        print('capacity', self.capacity)
     def get_num_slots(self):
         """
         Return the length of the list you're using to hold the hash
@@ -35,6 +36,11 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        count = 0
+        for i in self.capacity: 
+            count += 1
+        return count
+
 
 
     def get_load_factor(self):
@@ -52,6 +58,16 @@ class HashTable:
 
         Implement this, and/or DJB2.
         """
+        hval = 0x811c9dc5
+        prime = 0x01000193
+        size = 2**32
+        if not isinstance(key, bytes):
+            key = key.encode("UTF-8", "ignore")
+        for i in key: 
+            hashv = (hval * prime) % size
+            hashv = hashv ^ i
+        return hashv
+
 
         # Your code here
 
@@ -70,8 +86,8 @@ class HashTable:
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        #return self.fnv1(key) % self.capacity
-        return self.djb2(key) % self.capacity
+        return self.fnv1(key) % len(self.capacity)
+        # return self.djb2(key) % self.capacity
 
     def put(self, key, value):
         """
@@ -82,6 +98,9 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        hashNumber = self.hash_index(key)
+        self.capacity[hashNumber] = value
+
 
 
     def delete(self, key):
@@ -93,7 +112,9 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        hashNumber = self.hash_index(key)
+        DeletedHash = self.capacity[hashNumber] = None
+        return DeletedHash
 
     def get(self, key):
         """
@@ -104,6 +125,8 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        hashNumber = self.hash_index(key)
+        return self.capacity[hashNumber]
 
 
     def resize(self, new_capacity):
