@@ -6,6 +6,19 @@ class HashTableEntry:
         self.key = key
         self.value = value
         self.next = None
+        self.count = 0
+    def addHash(self, node):
+        current = HashTableEntry(node.key, node.value)
+    
+        while current != None: 
+            next_node = self.next
+            next_node = current
+            self.count = self.count + 1
+            current = None
+        print('length of node', self.count)
+        current = node
+        return current
+
 
 
 # Hash table can't have fewer than this many slots
@@ -25,6 +38,8 @@ class HashTable():
         
         self.capacity = [None] * MIN_CAPACITY
         print('capacity', self.capacity)
+        self.Node = HashTableEntry(None, None)
+
     def get_num_slots(self):
         """
         Return the length of the list you're using to hold the hash
@@ -98,8 +113,12 @@ class HashTable():
         Implement this.
         """
         # Your code here
+        # hashNumber = self.hash_index(key)
+        # self.capacity[hashNumber] = value
+        node = HashTableEntry(key, value)
         hashNumber = self.hash_index(key)
-        self.capacity[hashNumber] = value
+        self.capacity[hashNumber] = self.Node.addHash(node)
+        print(self.capacity)
 
 
 
@@ -112,9 +131,9 @@ class HashTable():
         Implement this.
         """
         # Your code here
-        hashNumber = self.hash_index(key)
-        DeletedHash = self.capacity[hashNumber] = None
-        return DeletedHash
+        # hashNumber = self.hash_index(key)
+        # DeletedHash = self.capacity[hashNumber] = None
+        # return DeletedHash
 
     def get(self, key):
         """
@@ -125,8 +144,10 @@ class HashTable():
         Implement this.
         """
         # Your code here
-        hashNumber = self.hash_index(key)
-        return self.capacity[hashNumber]
+        # hashNumber = self.hash_index(key)
+        # return self.capacity[hashNumber]
+
+
 
 
     def resize(self, new_capacity):
@@ -138,7 +159,8 @@ class HashTable():
         """
         # Your code here
 
-
+# node_end_list = HashTableEntry()
+# print(node_end_list)
 
 if __name__ == "__main__":
     ht = HashTable(8)
