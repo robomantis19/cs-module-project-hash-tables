@@ -1,3 +1,5 @@
+
+
 class HashTableEntry:
     """
     Linked List hash table key/value pair
@@ -32,7 +34,11 @@ class HashTableEntry:
         # current = node
         # return current
 
-
+    def deleteHash(self, key):
+        HashToDelete = self.getHash(key)
+        HashToDelete.key = None
+        HashToDelete.value = None
+        return HashToDelete
 
 
 
@@ -72,7 +78,7 @@ class HashTable():
         self.capacity = [None] * MIN_CAPACITY
         print('capacity', self.capacity)
         self.Node = HashTableEntry(None, None)
-
+      
     def get_num_slots(self):
         """
         Return the length of the list you're using to hold the hash
@@ -170,9 +176,12 @@ class HashTable():
         Implement this.
         """
         # Your code here
-        # hashNumber = self.hash_index(key)
-        # DeletedHash = self.capacity[hashNumber] = None
-        # return DeletedHash
+        hashNumber = self.hash_index(key)
+        self.capacity[hashNumber] = self.Node.deleteHash(key)
+        DeletedHash = self.capacity[hashNumber]
+        print('-------------Delete: ', DeletedHash)
+        return DeletedHash
+
 
     def get(self, key):
         """
@@ -204,7 +213,26 @@ class HashTable():
 
         Implement this.
         """
+        NoneCount = 0
+        FullCount = 0
+
+        for i in self.capacity: 
+            if i == None: 
+                NoneCount += 1
+            else: 
+                FullCount += 1
+        bucketPercent = FullCount/len(self.capacity)
+        print('+++++++bucket percentage, fullcount, noneCount, total: ', bucketPercent, FullCount, NoneCount, len(self.capacity))
         # Your code here
+        if bucketPercent > .7:
+            if type(new_capacity) == int: 
+                self.capacity = [None] * new_capacity
+
+            elif type(new_capacity) == list:
+                self.capacity = [None] * len(new_capacity)
+                print('number of slots ++++++ : ', self.get_num_slots())
+                self.resize(self.capacity)
+            
 
 # node_end_list = HashTableEntry()
 # print(node_end_list)
