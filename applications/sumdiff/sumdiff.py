@@ -13,3 +13,6 @@ def f(x):
 
 # Your code here
 
+for i in range(0, len(q) - 3): 
+    total = f(q[i]) + f(q[i+1]) + f(q[i+2]) - f(q[i+3])
+    print(total)

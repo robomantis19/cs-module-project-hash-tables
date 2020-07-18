@@ -1,3 +1,5 @@
+
+
 class HashTableEntry:
     """
     Linked List hash table key/value pair
@@ -6,13 +8,63 @@ class HashTableEntry:
         self.key = key
         self.value = value
         self.next = None
+        self.count = 0
+        self.head = None
+        
+    def addHash(self, node, oldValue = None):
+        node = HashTableEntry(node.key, node.value)
+        if self.head is None: 
+            self.head = node
+            return self.head
+        else: 
+            current = self.head
+
+            while current.next is not None: 
+                current = current.next
+            current.next = node
+            return current.next
+        # while current != None: 
+        #     next_node = self.next
+        #     next_node = current
+        #     self.count = self.count + 1
+        #     self.head = next_node
+        #     current = None
+                   
+        # print('length of node', self.count)
+        # current = node
+        # return current
+
+    def deleteHash(self, key):
+        HashToDelete = self.getHash(key)
+        HashToDelete.key = None
+        HashToDelete.value = None
+        return HashToDelete
+
+
+
+    def getHash(self, indexKey):
+        
+        current = self.head
+       
+        while current is not None: 
+            if current.key == indexKey:
+                return current
+            current = current.next
+        return None
+
+    def overwrite(self, oldKey, oldValue):
+        oldInput = self.getHash(oldKey) 
+        oldInput.value = oldValue
+        print('oldInput', oldInput)
+        return oldInput
+       
 
 
 # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
 
 
-class HashTable:
+class HashTable():
     """
     A hash table that with `capacity` buckets
     that accepts string keys
@@ -22,8 +74,11 @@ class HashTable:
 
     def __init__(self, capacity):
         # Your code here
-
-
+        
+        self.capacity = [None] * MIN_CAPACITY
+        print('capacity', self.capacity)
+        self.Node = HashTableEntry(None, None)
+      
     def get_num_slots(self):
         """
         Return the length of the list you're using to hold the hash
@@ -35,6 +90,11 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        count = 0
+        for i in self.capacity: 
+            count += 1
+        return count
+
 
 
     def get_load_factor(self):
@@ -52,6 +112,16 @@ class HashTable:
 
         Implement this, and/or DJB2.
         """
+        hval = 0x811c9dc5
+        prime = 0x01000193
+        size = 2**32
+        if not isinstance(key, bytes):
+            key = key.encode("UTF-8", "ignore")
+        for i in key: 
+            hashv = (hval * prime) % size
+            hashv = hashv ^ i
+        return hashv
+
 
         # Your code here
 
@@ -70,8 +140,8 @@ class HashTable:
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        #return self.fnv1(key) % self.capacity
-        return self.djb2(key) % self.capacity
+        return self.fnv1(key) % len(self.capacity)
+        # return self.djb2(key) % self.capacity
 
     def put(self, key, value):
         """
@@ -82,6 +152,19 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        # hashNumber = self.hash_index(key)
+        # self.capacity[hashNumber] = value
+        
+        node = HashTableEntry(key, value)
+        hashNumber = self.hash_index(key)
+        oldValue = self.Node.getHash(key)
+        self.capacity[hashNumber] = self.Node.addHash(node)
+        if oldValue:
+            self.capacity[hashNumber] = self.Node.overwrite(key, value)
+            return self.capacity[hashNumber].value
+        print(self.capacity)
+        return self.capacity
+
 
 
     def delete(self, key):
@@ -93,6 +176,11 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        hashNumber = self.hash_index(key)
+        self.capacity[hashNumber] = self.Node.deleteHash(key)
+        DeletedHash = self.capacity[hashNumber]
+        print('-------------Delete: ', DeletedHash)
+        return DeletedHash
 
 
     def get(self, key):
@@ -104,7 +192,19 @@ class HashTable:
         Implement this.
         """
         # Your code here
-
+        # hashNumber = self.hash_index(key)
+        # return self.capacity[hashNumber]
+        
+        hashNumber = self.hash_index(key)
+        linkedListofHashes = self.capacity[hashNumber]
+        print('linkedListofHashes key, value: ', linkedListofHashes)
+        nodeValue = self.Node.getHash(key)
+        if nodeValue != None:
+            print('nodeValue: ', nodeValue.key, nodeValue.value)
+            return nodeValue.value
+        else: 
+            print('nodeValue: None')
+            return None
 
     def resize(self, new_capacity):
         """
@@ -113,9 +213,29 @@ class HashTable:
 
         Implement this.
         """
+        NoneCount = 0
+        FullCount = 0
+
+        for i in self.capacity: 
+            if i == None: 
+                NoneCount += 1
+            else: 
+                FullCount += 1
+        bucketPercent = FullCount/len(self.capacity)
+        print('+++++++bucket percentage, fullcount, noneCount, total: ', bucketPercent, FullCount, NoneCount, len(self.capacity))
         # Your code here
+        if bucketPercent > .7:
+            if type(new_capacity) == int: 
+                self.capacity = [None] * new_capacity
 
+            elif type(new_capacity) == list:
+                self.capacity = [None] * len(new_capacity)
+                print('number of slots ++++++ : ', self.get_num_slots())
+                self.resize(self.capacity)
+            
 
+# node_end_list = HashTableEntry()
+# print(node_end_list)
 
 if __name__ == "__main__":
     ht = HashTable(8)
